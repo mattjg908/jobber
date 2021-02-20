@@ -2,6 +2,10 @@
 
 **TODO: Add description**
 
+## IEx
+$ iex -S mix
+Jobber.start_job(work: good_job)
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed

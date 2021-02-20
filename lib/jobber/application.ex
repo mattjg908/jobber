@@ -8,6 +8,7 @@ defmodule Jobber.Application do
   @impl true
   def start(_type, _args) do
     children = [
+      {DynamicSupervisor, strategy: :one_for_one, name: Jobber.JobRunner}
       # Starts a worker by calling: Jobber.Worker.start_link(arg)
       # {Jobber.Worker, arg}
     ]
