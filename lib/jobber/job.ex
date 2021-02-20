@@ -1,5 +1,6 @@
 defmodule Jobber.Job do
-  use GenServer
+  # transient won't try to restart if exited 'normally'
+  use GenServer, restart: :transient
   require Logger
 
   defstruct [:work, :id, :max_retries, retries: 0, status: "new"]
