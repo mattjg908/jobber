@@ -7,7 +7,7 @@ defmodule Jobber.Job do
 
   def init(args) do
     work = Keyword.fetch!(args, :work)
-    id = Keyword.get(args, :id, random_job_id())
+    id = Keyword.get(args, :id)
     max_retries = Keyword.get(args, :max_retries, 3)
 
     state = %Jobber.Job{id: id, work: work, max_retries: max_retries}
@@ -37,8 +37,22 @@ defmodule Jobber.Job do
     {:noreply, state, {:continue, :run}}
   end
 
+  @doc """
+  If you want to start this GenServer by a DynamicSupervisor, you must define
+  start_link/1
+  """
   def start_link(args) do
-    GenServer.start_link(__MODULE__, args)
+    args =
+      if Keyword.has_key?(args, :id) do
+        args
+      else
+        Keyword.put(args, :id, random_job_id())
+      end
+
+    id = Keyword.get(args, :id)
+    type = Keyword.get(args, :type)
+
+    GenServer.start_link(__MODULE__, args, name: via(id, type))
   end
 
   defp handle_job_result({:ok, _data}, state) do
@@ -66,4 +80,16 @@ defmodule Jobber.Job do
     :crypto.strong_rand_bytes(5)
     |> Base.url_encode64(padding: false)
   end
+
+  @doc """
+  Returns tuple that conforms to required Registry naming spec. Format is always
+  - {:via, Registry, config}
+
+  config is either
+    - {registry_process, key}
+    or
+    - {registry_process, key, value}
+  """
+  defp via(key, value),
+    do: {:via, Registry, {Jobber.JobRegistry, key, value}}
 end

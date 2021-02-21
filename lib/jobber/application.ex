@@ -14,13 +14,13 @@ defmodule Jobber.Application do
     ]
 
     children = [
+      # The keys are the names of the processes we are going to register, the
+      # key below allows us to specify is they should be unique or not
+      # (keys: duplicate)
+      {Registry, keys: :unique, name: Jobber.JobRegistry},
       {DynamicSupervisor, job_runner_config}
-      # Starts a worker by calling: Jobber.Worker.start_link(arg)
-      # {Jobber.Worker, arg}
     ]
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Jobber.Supervisor]
     Supervisor.start_link(children, opts)
   end
