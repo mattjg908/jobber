@@ -15,7 +15,7 @@ defmodule Jobber.Application do
 
     children = [
       # The keys are the names of the processes we are going to register, the
-      # key below allows us to specify is they should be unique or not
+      # key below allows us to specify if they should be unique or not
       # (keys: duplicate)
       {Registry, keys: :unique, name: Jobber.JobRegistry},
       {DynamicSupervisor, job_runner_config}
